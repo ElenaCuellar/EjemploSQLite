@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name" translatable="false">EjemploSQLite</string>
+    <string name="bAtras">Atrás</string>
+    <string name="bIr">Ir</string>
+    <string name="urlDefault" translatable="false">http://www.google.es</string>
+    <string name="introduzca">Introduzca url...</string>
+    <string name="urlGit" translatable="false">https://github.com</string>
+    <string name="error" translatable="false">Error: </string>
+    <string name="insertado"> Registro insertado.</string>
+</resources>

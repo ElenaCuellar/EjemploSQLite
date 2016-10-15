@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bAtras">Back</string>
+    <string name="bIr">Go</string>
+    <string name="introduzca">Write url...</string>
+    <string name="insertado">Record added.</string>
+</resources>
