@@ -6,7 +6,10 @@ package com.example.caxidy.ejemplosqlite;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         try {
             admin = new AdminSQL(MainActivity.this);
@@ -66,6 +72,20 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    //Metodos del menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.itembaja)
+            baja();
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     //Para guardar la informacion necesaria que se pierde al girar la pantalla
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -136,6 +156,17 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.insertado), Toast.LENGTH_LONG).show();
         }catch(Exception e){
             Toast.makeText(this,getString(R.string.error)+ e.getMessage(),Toast.LENGTH_LONG).show();
+        }
+    }
+    public void baja(){
+        String dirBorrar = autocomp.getText().toString();
+        long nreg_afectados = admin.borrarRegistro(dirBorrar);
+        if (nreg_afectados <= 0) {
+            Toast.makeText(this,"No se ha borrado ningun registro.",Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(this,"Registro borrado.",Toast.LENGTH_LONG).show();
+            autocomp.setText(getString(R.string.urlDefault));
         }
     }
 }

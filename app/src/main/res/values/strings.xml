@@ -7,4 +7,5 @@
     <string name="urlGit" translatable="false">https://github.com</string>
     <string name="error" translatable="false">Error: </string>
     <string name="insertado"> Registro insertado.</string>
+    <string name="baja"> BORRAR</string>
 </resources>

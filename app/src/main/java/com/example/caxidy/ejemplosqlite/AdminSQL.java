@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.widget.Toast;
 
 public class AdminSQL extends SQLiteOpenHelper {
 
@@ -16,7 +15,6 @@ public class AdminSQL extends SQLiteOpenHelper {
     public String nombreTabla = "direcciones";
     public String campoId = "id";
     public String campoDir = "direccion";
-    Context contexto;
 
     public AdminSQL(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -98,5 +96,16 @@ public class AdminSQL extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return listaReg;
+    }
+    //Borra un registro
+    public long borrarRegistro(String dir){
+        long nreg_afectados = -1;
+        /* Abrimos la BD de Escritura */
+        SQLiteDatabase db = getWritableDatabase();
+        if (db != null) {
+            nreg_afectados = db.delete("Direcciones", campoDir+" = '" + dir+"'", null);
+        }
+        db.close();
+        return nreg_afectados;
     }
 }

@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.caxidy.ejemplosqlite.MainActivity">
+
+    <item
+        android:id="@+id/itembaja"
+        android:orderInCategory="1"
+        android:title="@string/baja"
+        android:icon="@android:drawable/ic_delete"
+        app:showAsAction="always|withText" />
+</menu>
