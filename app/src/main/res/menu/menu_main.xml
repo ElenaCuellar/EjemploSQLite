@@ -8,5 +8,11 @@
         android:orderInCategory="1"
         android:title="@string/baja"
         android:icon="@android:drawable/ic_delete"
-        app:showAsAction="always|withText" />
+        app:showAsAction="ifRoom|withText" />
+    <item
+        android:id="@+id/itemhistorial"
+        android:orderInCategory="2"
+        android:title="@string/ithistorial"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        app:showAsAction="ifRoom|withText" />
 </menu>

@@ -8,4 +8,7 @@
     <string name="error" translatable="false">Error: </string>
     <string name="insertado"> Registro insertado.</string>
     <string name="baja"> BORRAR</string>
+    <string name="ithistorial"> HISTORIAL</string>
+    <string name="bhistatras"> Volver</string>
+    <string name="blimpiarhist"> Limpiar historial</string>
 </resources>

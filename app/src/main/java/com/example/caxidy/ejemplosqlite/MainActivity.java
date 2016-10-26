@@ -1,9 +1,14 @@
+/*!!!-Al borrar --> que antes pregunte con un Dialog
+* -Guardar info con sharedpreference
+* -Problema con Toast al borrar el historial = no aparece*/
+
 /*Navegador web que almacena en una BD las webs a las que vamos accediendo y luego al empezar
 *a escribir la direccion, salen en el historial automaticamente.*/
 
 package com.example.caxidy.ejemplosqlite;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +21,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     AdminSQL admin;
     MiAutoCompleteView autocomp;
     String[] item;
+    ArrayList<String> historial;
+    private static final int SUBACTIVIDAD1 = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
             admin = new AdminSQL(MainActivity.this);
             //Poner datos por defecto en la BD
             insertarAlgunaUrl();
+
             item = new String[]{getString(R.string.introduzca)};
+            historial = new ArrayList<>();
+            historial.add("Seleccione web..."); //espacio en blanco de la posicion 0
+
             autocomp = (MiAutoCompleteView) findViewById(R.id.autocompletar);
             //Añadir listener para mostrar sugerencias de webs mientras se escribe
             autocomp.addTextChangedListener(new MiAutoCompleteTextChangedListener(this));
@@ -83,7 +96,30 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.itembaja)
             baja();
+        else if(item.getItemId()==R.id.itemhistorial){
+            //Abrir el activity Historial, pasando la información del ArrayList historial
+            Intent i = new Intent(this,Historial.class);
+            i.putExtra("mihistorial",historial);
+            startActivityForResult(i,SUBACTIVIDAD1);
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int codigoActividad, int codigoResultado, Intent datos){
+        if(codigoActividad==SUBACTIVIDAD1) {
+            if (codigoResultado == RESULT_OK) {
+                //se pone la direccion del historial seleccionada en la barra de direcciones y se accede
+                autocomp.setText(datos.getStringExtra("webseleccionada"));
+                acceder(autocomp);
+            }
+            else if (codigoResultado == RESULT_CANCELED){
+                //se vacia el historial
+                historial.clear();
+                historial.add("Seleccione web..."); //posicion 0
+                Toast.makeText(getApplicationContext(),"Historial borrado",Toast.LENGTH_LONG); //!!!No aparece
+            }
+        }
     }
 
     @Override
@@ -124,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
     public void acceder(View v){ //Asociado al boton "Ir"
         w.loadUrl(autocomp.getText().toString()); //cargar la web
         alta(); //Guardar la direccion como un nuevo registro de la bd
+        historial.add(autocomp.getText().toString());
         esconderTeclado();
     }
 

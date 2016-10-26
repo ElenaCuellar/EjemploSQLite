@@ -5,4 +5,7 @@
     <string name="introduzca">Write url...</string>
     <string name="insertado">Record added.</string>
     <string name="baja">DELETE</string>
+    <string name="bhistatras">Back</string>
+    <string name="blimpiarhist">Clear history</string>
+    <string name="ithistorial">HISTORY</string>
 </resources>
