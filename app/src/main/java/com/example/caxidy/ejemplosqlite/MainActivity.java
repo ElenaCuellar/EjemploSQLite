@@ -1,14 +1,13 @@
-/*!!!-Al borrar --> que antes pregunte con un Dialog
-* -Guardar info con sharedpreference
-* -Problema con Toast al borrar el historial = no aparece*/
-
 /*Navegador web que almacena en una BD las webs a las que vamos accediendo y luego al empezar
 *a escribir la direccion, salen en el historial automaticamente.*/
 
 package com.example.caxidy.ejemplosqlite;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +20,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     String[] item;
     ArrayList<String> historial;
     private static final int SUBACTIVIDAD1 = 1;
+    private static final int RES_LIMPIAR = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
             w = (WebView) findViewById(R.id.web);
             w.setWebViewClient(new WebViewClient()); //para que las URL se abran en nuestro navegador
 
-            //Pagina de inicio
-            autocomp.setText(getString(R.string.urlDefault));
-            w.loadUrl(getString(R.string.urlDefault));
             //Soporte para Javascript
             w.getSettings().setJavaScriptEnabled(true);
 
@@ -74,16 +72,42 @@ public class MainActivity extends AppCompatActivity {
                         //Acceder a la web mediante INTRO
                         w.loadUrl(autocomp.getText().toString());
                         alta();
+                        historial.add(autocomp.getText().toString());
                         esconderTeclado();
                         return true;
                     }
                     return false;
                 }
             });
+
+            //Recuperar la informacion con SharedPreferences:
+            SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+            autocomp.setText(sharedPref.getString("url",getString(R.string.urlDefault)));
+            w.loadUrl(sharedPref.getString("urlweb",getString(R.string.urlDefault)));
         }catch (Exception e){
             Toast.makeText(this,getString(R.string.error)+ e.getMessage(),Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
+    }
+    @Override
+    protected void onPause(){ //Guardar la información con SharedPreferences:
+        super.onPause();
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString("url", autocomp.getText().toString());
+        editor.putString("urlweb", w.getUrl());
+        editor.commit();
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedBundle){
+        savedBundle.putStringArrayList("arraylisthist",historial);
+        w.saveState(savedBundle);
+    }
+    @Override
+    public void onRestoreInstanceState(Bundle restoredBundle){
+        historial.clear(); //para quitar el registro por defecto "Seleccione web..."
+        historial.addAll(restoredBundle.getStringArrayList("arraylisthist"));
+        w.restoreState(restoredBundle);
     }
     //Metodos del menu
     @Override
@@ -94,8 +118,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.itembaja)
-            baja();
+        if(item.getItemId()==R.id.itembaja) {
+            //Mostrar un dialog de confirmar baja
+            AlertDialog.Builder alertbu = new AlertDialog.Builder(this);
+            alertbu.setTitle("Confirme Eliminar registro");
+            alertbu.setMessage("Pulse OK si desea borrar la web de la base de datos");
+            alertbu.setIcon(R.mipmap.ic_launcher);
+
+            alertbu.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    baja();
+                }
+            });
+            alertbu.setNeutralButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {/*No se hace nada*/}
+            });
+            AlertDialog dialog = alertbu.create();
+            dialog.show();
+        }
         else if(item.getItemId()==R.id.itemhistorial){
             //Abrir el activity Historial, pasando la información del ArrayList historial
             Intent i = new Intent(this,Historial.class);
@@ -113,30 +155,13 @@ public class MainActivity extends AppCompatActivity {
                 autocomp.setText(datos.getStringExtra("webseleccionada"));
                 acceder(autocomp);
             }
-            else if (codigoResultado == RESULT_CANCELED){
+            else if (codigoResultado == RES_LIMPIAR){
                 //se vacia el historial
                 historial.clear();
                 historial.add("Seleccione web..."); //posicion 0
-                Toast.makeText(getApplicationContext(),"Historial borrado",Toast.LENGTH_LONG); //!!!No aparece
+                Snackbar.make(autocomp,"Historial borrado",Snackbar.LENGTH_LONG).show();
             }
         }
-    }
-
-    @Override
-    //Para guardar la informacion necesaria que se pierde al girar la pantalla
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        savedInstanceState.putString("url", autocomp.getText().toString());
-        savedInstanceState.putString("urlweb", w.getUrl());
-        w.saveState(savedInstanceState);
-    }
-    @Override
-    //Para recuperar la informacion guardada al girar la pantalla
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        autocomp.setText(savedInstanceState.getString("url"));
-        w.loadUrl(savedInstanceState.getString("urlweb"));
-        w.restoreState(savedInstanceState);
     }
 
     /*Funcionamiento del navegador*/

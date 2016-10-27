@@ -15,6 +15,7 @@ public class Historial extends AppCompatActivity implements AdapterView.OnItemSe
     ArrayList<String> listaHistorial;
     ArrayAdapter<String> adapt;
     Spinner sp;
+    private static final int RESULTADO_LIMPIAR=3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +36,7 @@ public class Historial extends AppCompatActivity implements AdapterView.OnItemSe
         adapt.notifyDataSetChanged();
         sp.setAdapter(adapt);
         Intent i = new Intent();
-        setResult(RESULT_CANCELED,i);
+        setResult(RESULTADO_LIMPIAR,i);
         finish();
     }
 
